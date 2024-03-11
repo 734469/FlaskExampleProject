@@ -1,0 +1,10 @@
+table for location:
+id, city and user id
+
+Add air quality section for users to see and get advice on the air quality
+
+provide default advice
+
+get a place for extra user info (in another table maybe)
+
+user info table: User ID, City, avatar, medical conditions

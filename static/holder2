@@ -1,0 +1,169 @@
+import os
+import os.path as op
+import requests
+import json
+from werkzeug.utils import secure_filename
+from sqlalchemy.orm import relationship
+from datetime import datetime as dt
+from decimal import Decimal
+from flask_admin import Admin
+from flask import session as login_session
+from flask_bcrypt import Bcrypt
+from flask_login import UserMixin, LoginManager, login_user, logout_user, current_user
+from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
+from flask_admin.contrib.sqla import ModelView
+from flask import Flask, render_template, url_for, redirect, request
+from sqlalchemy.sql import func
+
+UPLOAD_FOLDER = 'static'
+admin = Admin()
+app = Flask (__name__, static_folder='static')
+login_manager = LoginManager(app)
+bcrypt = Bcrypt(app)
+app.config['FLASK_ADMIN_SWATCH'] = 'cosmo'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:\\Users\\joshu\\Databases\\Weather.db'
+app.config['SECRET_KEY'] = 'disum3rh9g'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+db = SQLAlchemy(app)
+admin.init_app(app)
+file_path = op.join(op.dirname(__file__), 'static')
+try:
+    os.mkdir(file_path)
+except OSError:
+    pass
+
+API = "8c843141480548dea9585310242302"
+aqi = "yes"
+#weather_url = f"http://api.weatherapi.com/v1/current.json?key={API}&q={city_name}&aqi={aqi}"
+
+
+#Creating user
+class User(db.Model, UserMixin):
+    __tablename__ ="user"
+    id = db.Column(db.Integer, primary_key=True) #primary key
+    username=db.Column(db.String(50))
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+
+
+def __repr__(self):
+    return f'<User (self.username)>'
+
+
+#loads user as something
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+#user admin modelview
+class UserView(ModelView):
+    can_delete = False
+    form_columns = ["username", "email", "password"]
+    column_list = ["username", "email", "password"]
+
+
+admin.add_view(UserView(User, db.session))
+
+
+@app.route('/')
+@app.route('/home')
+def homepage():
+    print(current_user.is_authenticated)
+    return render_template('homepage.html')
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == "POST":
+        username = request.form["username"]
+        email = request.form["email"]
+        password = request.form["password"]
+        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+        new_user = User(username=username, email=email, password=hashed_password) #adds them as the account details to the admin setup
+        db.session.add(new_user) #adds it to the database
+        db.session.commit() #commits it do the database
+        return redirect(url_for('login')) #moves user straight to login
+    return render_template('register.html')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        user = User.query.filter_by(username=username).first()
+        if user and bcrypt.check_password_hash(user.password, password):
+            login_session["username"] = username
+            login_user(user)
+            return redirect(url_for("homepage"))
+        else:
+            if "username" in login_session:
+                return redirect(url_for("homepage"))
+    return render_template("login.html")
+
+
+@app.route('/dashboard')
+def dashboard():
+    weather_url = f"http://api.weatherapi.com/v1/current.json?key={API}&q=London&aqi={aqi}"
+    result = requests.get(weather_url)
+    weather_data = json.loads(result.text)
+    weather_type = weather_data["current"]["condition"]["text"]
+    return render_template('dashboard.html', weather_type=weather_type)
+
+
+@app.route('/defaultWeather')
+def homeframe1():
+    weather_url = f"http://api.weatherapi.com/v1/current.json?key={API}&q=London&aqi={aqi}"
+    london = requests.get(weather_url)
+    print(london)
+    weather_data = json.loads(london.text)
+    weather_lon = weather_data["current"]["condition"]["text"]
+    country = weather_data["location"]["country"]
+    wind = weather_data["current"]["wind_mph"]
+    pressure = weather_data["current"]["pressure_mb"]
+    rain = weather_data["current"]["precip_mm"]
+    humidity =weather_data["current"]["humidity"]
+
+    return render_template('defaultWeather.html', loc=weather_lon, country=country, wind=wind, pre=pressure, rain=rain, hum=humidity)
+
+
+@app.route('/defaultWeather2')
+def homeframe2():
+
+    weather_url = f"http://api.weatherapi.com/v1/current.json?key={API}&q=NY&aqi={aqi}"
+    nYork = requests.get(weather_url)
+    weather_data = json.loads(nYork.text)
+    weather_ny = weather_data["current"]["condition"]["text"]
+    country = weather_data["location"]["country"]
+    wind = weather_data["current"]["wind_mph"]
+    pressure = weather_data["current"]["pressure_mb"]
+    rain = weather_data["current"]["precip_mm"]
+    humidity =weather_data["current"]["humidity"]
+
+    return render_template('defaultWeather2.html', loc=weather_ny, country=country, wind=wind, pre=pressure, rain=rain, hum=humidity)
+
+
+@app.route('/defaultWeather3')
+def homeframe3():
+    weather_url = f"http://api.weatherapi.com/v1/current.json?key={API}&q=Beijing&aqi={aqi}"
+    beijing = requests.get(weather_url)
+    weather_data = json.loads(beijing.text)
+    print(weather_data)
+    weather_bei = weather_data["current"]["condition"]["text"]
+    country = weather_data["location"]["country"]
+    wind = weather_data["current"]["wind_mph"]
+    pressure = weather_data["current"]["pressure_mb"]
+    rain = weather_data["current"]["precip_mm"]
+    humidity =weather_data["current"]["humidity"]
+
+    return render_template('defaultWeather3.html', loc=weather_bei, country=country, wind=wind, pre=pressure, rain=rain, hum=humidity)
+
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)

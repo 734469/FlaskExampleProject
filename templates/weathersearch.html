@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}"/>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div class="header">
+    <div class="left">
+        <img class="logo" id="image" src="{{url_for('static', filename='logo_trans.png')}}" alt="logo" width="85px" height="85px">
+        <div class="center">
+            <h1>HA Weather</h1>
+        </div>
+    </div>
+    <div class="right">
+        <button id="toggle" class="toggle" onclick="dark_light()">Toggle Mode</button>
+{% if current_user.is_authenticated %}
+        <a href="{{url_for('logout')}}"><button class="l_button">Logout</button></a>
+        {% else %}
+        <a href="{{url_for('register')}}"><button class="l_button">Register</button></a>
+        <a href="{{url_for('login')}}"><button class="r_button">Login</button></a>
+        {% endif %}
+        <a href="javascript:void(0);" onclick="settings()"><img class="avatar" src="{{url_for('static', filename='login_logo.png')}}" alt="avatar" width="80px" height="80px"></a>
+    </div>
+</div>
+    <ul>
+  <li><a href="{{url_for('homepage')}}">Home</a></li>
+        {% if current_user.is_authenticated %}
+  <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+        {% else %}
+  <li><a href="{{ url_for('login') }}">Dashboard</a></li>
+        {% endif %}
+  <li><a class="active" href="{{ url_for('weather_search') }}">Weather Search</a></li>
+  <li><a href="{{ url_for('info') }}">Health Information</a></li>
+  <li><a href="#about">About</a></li>
+</ul>
+{% if current_user.is_authenticated %}
+        <div class="upnav">
+  <div id="myLinks">
+    <a class="nohov" href="#blank">Settings</a>
+    <a href="#contact">Change Info</a>
+    <a href="{{ url_for('user_info') }}">View My Info</a>
+  </div>
+    <i class="fa fa-bars"></i>
+  </a>
+</div>
+{% endif %}
+<!--
+<form action ="{{ url_for('weather_search')}}" method = "POST">
+    <label for="city_name">City:</label>
+    <input type="text" name="city_name" required>
+    <input type="submit" value="Get Weather">
+</form>
+-->
+<div class="content_div">
+    <div class="l_cont_box">
+        <h4>Enter a city to get its weather</h4>
+
+        <form action="{{url_for('weather_search')}}" method="POST">
+          <label for="city_name">City:</label>
+          <input type="text" name="city_name" required />  <br><br>
+        <input type="submit" value="Get Weather">
+
+        </form>
+
+        <h4>Weather for {{city_name}}</h4>
+        <h4>Country: {{country}}</h4>
+        <p>Region: {{region}}</p>
+        <p>Time: {{time}}</p>
+        <p>Weather Type: {{weather}}</p>
+        <p>Windspeed mph: {{wind}}</p>
+        <p>Pressure mb: {{pre}}</p>
+        <p>Precipitation mm: {{rain}}</p>
+        <p>Temperature Celsius: {{temp}}</p>
+        <p>Humidity: {{hum}}</p>
+    </div>
+</div>
+
+<!--
+<p>City Name: {{city_name}}</p>
+<p>Current Temperature: {{temp}}</p>
+-->
+<script src="{{url_for('static', filename='homepage.js')}}"></script>
+</body>
+</html>

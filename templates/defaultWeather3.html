@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='iframe.css') }}"/>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Beijing</h2>
+<div>
+    <p>Country: {{country}}</p>
+    <p>Weather: {{loc}}</p>
+    <p>Wind: {{wind}}mph</p>
+    <p>Pressure {{pre}}mb</p>
+    <p>Precipitation {{rain}}mm</p>
+    <p>Humidity {{hum}}</p>
+</div>
+</body>
+</html>

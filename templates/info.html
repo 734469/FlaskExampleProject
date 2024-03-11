@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}"/>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="header">
+    <div class="left">
+        <img class="logo" id="image" src="{{url_for('static', filename='logo_trans.png')}}" alt="logo" width="85px" height="85px">
+        <div class="center">
+            <h1>HA Weather</h1>
+        </div>
+    </div>
+    <div class="right">
+        <button id="toggle" class="toggle" onclick="dark_light()">Toggle Mode</button>
+{% if current_user.is_authenticated %}
+        <a href="{{url_for('logout')}}"><button class="l_button">Logout</button></a>
+        {% else %}
+        <a href="{{url_for('register')}}"><button class="l_button">Register</button></a>
+        <a href="{{url_for('login')}}"><button class="r_button">Login</button></a>
+        {% endif %}
+        <a href="javascript:void(0);" onclick="settings()"><img class="avatar" src="{{url_for('static', filename='login_logo.png')}}" alt="avatar" width="80px" height="80px"></a>
+    </div>
+</div>
+    <ul>
+  <li><a href="{{url_for('homepage')}}">Home</a></li>
+        {% if current_user.is_authenticated %}
+  <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+        {% else %}
+  <li><a href="{{ url_for('login') }}">Dashboard</a></li>
+        {% endif %}
+  <li><a href="{{ url_for('weather_search') }}">Weather Search</a></li>
+  <li><a class="active" href="{{ url_for('info') }}">Health Information</a></li>
+  <li><a href="#about">About</a></li>
+</ul>
+
+{% if current_user.is_authenticated %}
+        <div class="upnav">
+  <div id="myLinks">
+    <a class="nohov" href="#blank">Settings</a>
+    <a href="#contact">Change Info</a>
+    <a href="#about">View My Info</a>
+  </div>
+    <i class="fa fa-bars"></i>
+  </a>
+</div>
+{% endif %}
+
+<script src="{{url_for('static', filename='homepage.js')}}"></script>
+<script src="{{url_for('static', filename='BMI.js')}}"></script>
+</body>
+</html>

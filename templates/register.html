@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='reg&login.css') }}"/>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+<body onload="termsSubmit()">
+
+<div class="center"><button id="toggle" class="toggle" onclick="dark_light()">Toggle Mode</button></div>
+
+<div class="center">
+<h1>Register</h1>
+</div>
+
+<div class="center">
+    <div class="login-holder">
+        <div class="login-box">
+
+
+<form method="post">
+    <label for="username">Username:</label>
+    <input type="text" name="username" required/><br><br>
+
+    <label for="email">Email: </label>
+    <input type="text" name="email" required/><br><br>
+
+    <label for="password">Password: </label>
+    <input type="password" name="password" required/><br><br>
+
+    <input type="checkbox" name="terms" id="terms" value="" onchange="activateSubmit(this)">I Agree To The <a href="{{url_for('term_conds')}}">Tems And Conditions</a><br><br>
+    <button type="submit" name="submit" id="submit">Register</button><br>
+</form>
+    </div>
+            </div>
+</div>
+<script src="{{url_for('static', filename='homepage.js')}}"></script>
+</body>
+</html>
